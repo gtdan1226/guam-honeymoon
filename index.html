@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>괌 여행 4박 5일 · 12월 6일 ~ 10일</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --sea:#0e7c86; --sea-deep:#0a4f5c; --sand:#f6efe4; --coral:#e8735a;
+    --ink:#1f2a30; --muted:#6b7a80; --line:#e4ddd0; --card:#fffdf9;
+    --d1:#e8735a; --d2:#0e7c86; --d3:#7a5cc4; --d4:#d99a1e; --d5:#4f8a3c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;background:var(--sand);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px}
+
+  header{background:linear-gradient(160deg,var(--sea-deep),var(--sea) 60%,#3fb0b0);color:#fff;padding:48px 0 34px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-40px;height:80px;background:var(--sand);border-radius:50% 50% 0 0}
+  .eyebrow{font-size:13px;letter-spacing:.14em;opacity:.85;text-transform:uppercase}
+  h1{font-size:clamp(30px,7vw,44px);font-weight:800;margin:6px 0 10px;letter-spacing:-.02em}
+  .sub{opacity:.92;font-size:15px}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:22px;position:relative;z-index:1}
+  .fact{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px 12px}
+  .fact b{display:block;font-size:12px;opacity:.8;font-weight:500}
+  .fact span{font-size:15px;font-weight:700}
+
+  nav.tabs{position:sticky;top:0;z-index:500;background:var(--sand);padding:12px 0 10px;border-bottom:1px solid var(--line)}
+  .tabrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .tabrow::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
+  .tab .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .tab[aria-selected="true"]{color:#fff;border-color:transparent}
+
+  section{padding:26px 0}
+  h2{font-size:22px;font-weight:800;letter-spacing:-.01em;margin-bottom:4px}
+  .theme{color:var(--muted);font-size:14px;margin-bottom:16px}
+
+  #map{height:340px;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:#dfe9ea}
+  .maphint{font-size:12px;color:var(--muted);margin-top:6px}
+
+  .timeline{margin-top:18px;position:relative}
+  .stop{display:grid;grid-template-columns:64px 22px 1fr;gap:0 10px;align-items:start}
+  .time{font-size:13px;font-weight:700;color:var(--muted);text-align:right;padding-top:13px;font-variant-numeric:tabular-nums}
+  .rail{position:relative;height:100%}
+  .rail::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--line)}
+  .stop:first-child .rail::before{top:18px}
+  .stop:last-child .rail::before{bottom:calc(100% - 18px)}
+  .rail i{position:absolute;left:4px;top:13px;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin:5px 0}
+  .card h3{font-size:15.5px;font-weight:700;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .card p{font-size:13.5px;color:var(--muted);margin-top:2px}
+  .tag{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;letter-spacing:.02em}
+  .t-meal{background:#fde9e3;color:#b4472f}
+  .t-beach{background:#dff2f2;color:#0a6670}
+  .t-photo{background:#ece6f8;color:#5a3fa3}
+  .t-shop{background:#fbf0d6;color:#946410}
+  .t-act{background:#e2efdc;color:#3b6c2c}
+  .t-book{background:var(--ink);color:#fff}
+  .card a{color:var(--sea);font-size:12.5px;text-decoration:none;font-weight:600}
+
+  .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;color:var(--muted);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  td .small{display:block;font-size:12.5px;color:var(--muted)}
+  label.check{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+  label.check input{margin-top:4px;accent-color:var(--sea);width:16px;height:16px;flex:0 0 auto}
+  .free{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{background:var(--sand);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:13px}
+
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  .tip{background:#fff;border:1px solid var(--line);border-left:4px solid var(--sea);border-radius:12px;padding:12px 14px;font-size:14px}
+  .tip b{display:block;margin-bottom:2px}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:24px 0 40px}
+  @media (max-width:520px){
+    .stop{grid-template-columns:52px 20px 1fr;gap:0 6px}
+    .time{font-size:12px}
+    #map{height:280px}
+    th:nth-child(3),td:nth-child(3){display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Guam · Tumon Bay</div>
+    <h1>괌 4박 5일 🌴</h1>
+    <p class="sub">12월 6일(일) ~ 12월 10일(목) · 두짓타니 괌 리조트</p>
+    <div class="facts">
+      <div class="fact"><b>가는 편</b><span>ICN 07:45 → GUM 13:00</span></div>
+      <div class="fact"><b>오는 편</b><span>GUM 16:50 → ICN 20:40</span></div>
+      <div class="fact"><b>숙소</b><span>두짓타니 (투몬)</span></div>
+      <div class="fact"><b>저녁 기준</b><span>오후 7시</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="날짜 선택">
+  <div class="wrap"><div class="tabrow" id="tabs" role="tablist"></div></div>
+</nav>
+
+<main class="wrap">
+  <section id="day">
+    <h2 id="dayTitle"></h2>
+    <p class="theme" id="dayTheme"></p>
+    <div id="map" role="img" aria-label="하루 동선 지도"></div>
+    <p class="maphint">번호 순서대로 이동해요. 핀을 누르면 장소 이름이 보여요.</p>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <section>
+    <h2>예약할 것 ✅</h2>
+    <p class="theme">체크하면 이 기기에 저장돼요.</p>
+    <div class="panel">
+      <table>
+        <thead><tr><th>할 일</th><th>언제</th><th>어디서</th></tr></thead>
+        <tbody id="bookings"></tbody>
+      </table>
+      <div class="free">
+        <span class="chip">예약 없이 OK →</span>
+        <span class="chip">투몬 나이트마켓</span>
+        <span class="chip">차모로 빌리지 야시장</span>
+        <span class="chip">이파오 비치</span>
+        <span class="chip">Heavy Hitters</span>
+        <span class="chip">Meskla Dos</span>
+        <span class="chip">LYT</span>
+        <span class="chip">공항 택시</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>알아둘 것 💡</h2>
+    <div class="tips">
+      <div class="tip"><b>다이빙 → 비행</b>다이빙은 12/7이라 귀국(12/10)까지 충분히 떨어져 있어요. 다이빙 당일엔 사우나·강한 마사지는 피하기.</div>
+      <div class="tip"><b>별빛 투어 날 저녁</b>투어가 20:00에 끝나서 이날만 저녁이 20:30. 오후 4시쯤 간식 챙기기 (투어 중 컵라면 1개 제공).</div>
+      <div class="tip"><b>12월 날씨</b>건기로 접어드는 시기지만 바람이 불면 다이빙이 취소될 수 있어요. 수요일 오전을 예비로.</div>
+      <div class="tip"><b>공항 이동</b>호텔 셔틀은 차량당 편도 USD 100. 공항까지 10분 거리라 택시가 훨씬 저렴해요.</div>
+      <div class="tip"><b>챙길 것</b>스노클 마스크, 물신(건비치·이파오), 선크림, 방수팩.</div>
+      <div class="tip"><b>두짓골드</b>무료 가입하면 Tasi Grill 등 호텔 식당 할인. 결제 전에 먼저 말하기.</div>
+    </div>
+  </section>
+</main>
+
+<footer>Hafa Adai! 즐거운 여행 되세요 ☀️</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const HOTEL = {n:"두짓타니 괌 리조트", lat:13.51368, lng:144.80526};
+const DAYS = [
+  {key:"d1", color:"var(--d1)", hex:"#e8735a", tab:"12/6 일", title:"Day 1 · 12월 6일 (일)", theme:"도착일 — 많이 안 움직이고 우아하게",
+   stops:[
+    {t:"13:00", n:"괌 공항 도착 → 호텔에 짐 맡기기", d:"택시 10분", tag:["act","이동"], lat:13.48564, lng:144.80014},
+    {t:"14:00", n:"점심 · Beachin' Shrimp", d:"호텔 옆 두짓 플레이스, 갈릭 새우 요리", tag:["meal","점심"], lat:13.51360, lng:144.80580},
+    {t:"15:00", n:"체크인", d:"레이트 체크아웃(12/10)도 이때 요청", tag:["act","호텔"], lat:HOTEL.lat, lng:HOTEL.lng, skip:true},
+    {t:"15:30", n:"호텔 앞 투몬 비치", d:"물놀이 → 비치바에서 한잔", tag:["beach","해변"], lat:13.51542, lng:144.80487},
+    {t:"17:15", n:"투몬 나이트마켓", d:"일요일 저녁만 열리는 야시장, 걸어서 7분", tag:["shop","구경"], lat:13.50963, lng:144.80517},
+    {t:"19:00", n:"저녁 · Alfredo's Steak House", d:"호텔 안 파인다이닝 스테이크하우스", tag:["meal","저녁"], book:true, lat:13.51388, lng:144.80481}
+  ]},
+  {key:"d2", color:"var(--d2)", hex:"#0e7c86", tab:"12/7 월", title:"Day 2 · 12월 7일 (월)", theme:"액티비티 — 체험 스쿠버다이빙 + 해변",
+   stops:[
+    {t:"09:00", n:"아침 · Aqua 조식", d:"다이빙 전이라 너무 배부르지 않게", tag:["meal","아침"], lat:13.51418, lng:144.80449, skip:true},
+    {t:"10:50", n:"다이빙 업체 픽업", d:"두짓타니 G층 로비", tag:["act","픽업"], lat:HOTEL.lat, lng:HOTEL.lng},
+    {t:"12:00", n:"피쉬아이 체험 스쿠버다이빙", d:"자격증 없이 가능, 안전교육 포함 · 14:00쯤 호텔 복귀", tag:["act","다이빙"], book:true, lat:13.46930, lng:144.70520},
+    {t:"14:30", n:"늦은 점심 · Heavy Hitters", d:"차모로 BBQ 플레이트, 양이 많아서 하나 나눠도 OK", tag:["meal","점심"], lat:13.50960, lng:144.80378},
+    {t:"15:45", n:"카페 · CoffeeSlut", d:"호텔 근처, 커피 + 크루아상", tag:["meal","카페"], lat:13.51427, lng:144.80561},
+    {t:"16:45", n:"투몬 비치 + 일몰", d:"12월엔 해가 6시 전에 져요", tag:["beach","해변"], lat:13.51542, lng:144.80487},
+    {t:"19:00", n:"저녁 · Tasi Grill", d:"해변 바로 앞 야경 디너, 창가 자리 요청", tag:["meal","저녁"], book:true, lat:13.51429, lng:144.80445}
+  ]},
+  {key:"d3", color:"var(--d3)", hex:"#7a5cc4", tab:"12/8 화", title:"Day 3 · 12월 8일 (화)", theme:"사진의 날 — 절벽·해변 낮 사진 + 별빛 스냅",
+   stops:[
+    {t:"08:00", n:"아침 · Aqua 조식", d:"", tag:["meal","아침"], lat:13.51418, lng:144.80449, skip:true},
+    {t:"09:30", n:"사랑의 절벽", d:"오전 빛이 좋고 한산해요 · 택시 6분", tag:["photo","사진"], lat:13.53497, lng:144.80249},
+    {t:"10:45", n:"건비치", d:"바위 해변과 열대어 · 물신 필수", tag:["photo","사진"], lat:13.52430, lng:144.80336},
+    {t:"12:15", n:"점심 · Pika's Cafe", d:"차모로 스타일 브런치 · 15시 마감", tag:["meal","점심"], lat:13.50760, lng:144.81030},
+    {t:"13:30", n:"마이크로네시아 몰", d:"메이시스, 페이레스 마트(기념품·간식)", tag:["shop","쇼핑"], lat:13.52044, lng:144.81779},
+    {t:"16:00", n:"호텔 휴식 & 간식", d:"저녁이 늦으니 미리 요기", tag:["act","휴식"], lat:HOTEL.lat, lng:HOTEL.lng},
+    {t:"17:20", n:"별빛 스냅 투어 (리가로얄)", d:"호텔 픽업 → 일몰 + 별빛 촬영 → 20:00 종료", tag:["photo","스냅"], book:true, lat:13.49660, lng:144.77128},
+    {t:"20:30", n:"저녁 · LYT Restaurant & Bar", d:"투몬, 자정까지 · 불고기 볼이 인기", tag:["meal","저녁"], lat:13.51728, lng:144.80731}
+  ]},
+  {key:"d4", color:"var(--d4)", hex:"#d99a1e", tab:"12/9 수", title:"Day 4 · 12월 9일 (수)", theme:"여유로운 쇼핑 + 오후 스노클링 + 수요 야시장",
+   stops:[
+    {t:"08:00", n:"아침 · Aqua 조식", d:"", tag:["meal","아침"], lat:13.51418, lng:144.80449, skip:true},
+    {t:"10:00", n:"괌 프리미어 아울렛 (GPO)", d:"오픈 시간에 맞춰 여유롭게", tag:["shop","쇼핑"], lat:13.48998, lng:144.78186},
+    {t:"12:15", n:"점심 · Meskla Dos", d:"새우 버거가 간판 메뉴", tag:["meal","점심"], lat:13.50179, lng:144.79927},
+    {t:"13:30", n:"이파오 비치 스노클링", d:"리프 안이라 잔잔하고 물고기가 많아요", tag:["beach","스노클링"], lat:13.50284, lng:144.79056},
+    {t:"16:15", n:"호텔에서 샤워 & 휴식", d:"", tag:["act","휴식"], lat:HOTEL.lat, lng:HOTEL.lng},
+    {t:"18:15", n:"스페인 광장", d:"조명 켜진 광장 산책", tag:["photo","산책"], lat:13.47389, lng:144.75167},
+    {t:"19:00", n:"저녁 · 차모로 빌리지 수요 야시장", d:"차모로 BBQ · 레드라이스 · 켈라겐 (21:30까지)", tag:["meal","저녁"], lat:13.47769, lng:144.75220}
+  ]},
+  {key:"d5", color:"var(--d5)", hex:"#4f8a3c", tab:"12/10 목", title:"Day 5 · 12월 10일 (목)", theme:"귀국일 — 평범하게 먹고 가기",
+   stops:[
+    {t:"08:00", n:"아침 · Aqua 조식", d:"", tag:["meal","아침"], lat:13.51418, lng:144.80449, skip:true},
+    {t:"09:00", n:"마지막 해변 수영", d:"호텔 앞 투몬 비치", tag:["beach","해변"], lat:13.51542, lng:144.80487},
+    {t:"11:00", n:"체크아웃", d:"레이트 체크아웃 받았으면 여유롭게", tag:["act","호텔"], lat:HOTEL.lat, lng:HOTEL.lng},
+    {t:"12:15", n:"점심 · Eggs 'n Things", d:"걸어서 · 팬케이크, 로코모코", tag:["meal","점심"], lat:13.51596, lng:144.80701},
+    {t:"14:00", n:"공항으로 출발", d:"16:50 출발편 · 택시 10분", tag:["act","이동"], lat:13.48564, lng:144.80014}
+  ]}
+];
+
+const BOOKINGS = [
+  {id:"b6", what:"두짓골드 회원 가입", when:"출발 전", where:'<a href="https://dusit.com/dusitthani-guamresort" target="_blank" rel="noopener">두짓 공식 사이트 ↗</a>', note:"무료 · 호텔 식당 할인"},
+  {id:"b1", what:"Alfredo's Steak House", when:"12/6 19:00", where:'<a href="tel:+16716488000">☎ +1 671-648-8000</a><span class="small">호텔 직접 (OpenTable도 가능)</span>', note:"수수료 없음"},
+  {id:"b2", what:"체험 스쿠버다이빙 (2차 타임)", when:"12/7 10:50 픽업", where:'<a href="https://www.waug.com/ko/activities/131776" target="_blank" rel="noopener">와그 ↗</a> · <a href="https://www.myrealtrip.com/offers/20924" target="_blank" rel="noopener">마이리얼트립 ↗</a>', note:"써니다이브 · 쿠폰가 비교 후 예약"},
+  {id:"b3", what:"Tasi Grill", when:"12/7 19:00", where:'<a href="tel:+16716488525">☎ +1 671-648-8525</a><span class="small">호텔 직접 (OpenTable도 가능)</span>', note:"창가 자리 · 두짓골드 할인"},
+  {id:"b4", what:"별빛네컷 1차 (리가로얄)", when:"12/8 17:20 픽업", where:'<a href="https://experiences.myrealtrip.com/products/3880763" target="_blank" rel="noopener">마이리얼트립 ↗</a>', note:"디너 옵션은 목~토만 → 이번엔 BASIC"},
+  {id:"b5", what:"레이트 체크아웃", when:"12/10", where:'<a href="mailto:dtgu@dusit.com">dtgu@dusit.com</a><span class="small">또는 체크인 때 요청</span>', note:"무료인지 확인"}
+];
+
+const tabs = document.getElementById('tabs');
+let map, layer;
+
+function gmaps(s){return `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`}
+
+function render(i){
+  const day = DAYS[i];
+  [...tabs.children].forEach((b,j)=>{
+    const on = j===i;
+    b.setAttribute('aria-selected', on);
+    b.style.background = on ? DAYS[j].hex : '#fff';
+  });
+  document.getElementById('dayTitle').textContent = day.title;
+  document.getElementById('dayTheme').textContent = day.theme;
+
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = day.stops.map(s=>`
+    <div class="stop">
+      <div class="time">${s.t}</div>
+      <div class="rail"><i style="background:${day.hex}"></i></div>
+      <div class="card">
+        <h3>${s.n} <span class="tag t-${s.tag[0]}">${s.tag[1]}</span>${s.book?'<span class="tag t-book">예약</span>':''}</h3>
+        ${s.d?`<p>${s.d}</p>`:''}
+        <a href="${gmaps(s)}" target="_blank" rel="noopener">지도에서 열기 ↗</a>
+      </div>
+    </div>`).join('');
+
+  if(!map) return;
+  layer.clearLayers();
+  const pts = day.stops.filter(s=>!s.skip);
+  const latlngs = [];
+  pts.forEach((s,k)=>{
+    latlngs.push([s.lat,s.lng]);
+    const icon = L.divIcon({className:'',iconSize:[26,26],iconAnchor:[13,13],
+      html:`<div style="width:26px;height:26px;border-radius:50%;background:${day.hex};color:#fff;font:700 12px Pretendard,sans-serif;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${k+1}</div>`});
+    L.marker([s.lat,s.lng],{icon}).bindPopup(`<b>${s.t}</b> ${s.n}`).addTo(layer);
+  });
+  L.polyline(latlngs,{color:day.hex,weight:3,opacity:.8,dashArray:'6 6'}).addTo(layer);
+  L.marker([HOTEL.lat,HOTEL.lng],{icon:L.divIcon({className:'',iconSize:[30,30],iconAnchor:[15,15],
+    html:'<div style="font-size:22px;line-height:30px;text-align:center;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">🏨</div>'})})
+    .bindPopup('<b>두짓타니 괌 리조트</b>').addTo(layer);
+  map.fitBounds(L.latLngBounds(latlngs.concat([[HOTEL.lat,HOTEL.lng]])),{padding:[30,30],maxZoom:15});
+}
+
+DAYS.forEach((d,i)=>{
+  const b=document.createElement('button');
+  b.className='tab'; b.setAttribute('role','tab');
+  b.innerHTML=`<span class="dot" style="background:${d.hex}"></span>${d.tab}`;
+  b.onclick=()=>{render(i); history.replaceState(null,'','#'+d.key)};
+  tabs.appendChild(b);
+});
+
+try{
+  map = L.map('map',{scrollWheelZoom:false,tap:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
+  layer = L.layerGroup().addTo(map);
+}catch(e){ document.getElementById('map').style.display='none'; }
+
+const start = Math.max(0, DAYS.findIndex(d=>'#'+d.key===location.hash));
+render(start);
+
+// 예약 체크리스트
+let saved = {};
+try{ saved = JSON.parse(localStorage.getItem('guam-bookings')||'{}'); }catch(e){}
+document.getElementById('bookings').innerHTML = BOOKINGS.map(b=>`
+  <tr>
+    <td><label class="check"><input type="checkbox" data-id="${b.id}" ${saved[b.id]?'checked':''}><span>${b.what}<span class="small">${b.note}</span></span></label></td>
+    <td>${b.when}</td>
+    <td>${b.where}</td>
+  </tr>`).join('');
+document.querySelectorAll('#bookings input').forEach(cb=>cb.addEventListener('change',()=>{
+  saved[cb.dataset.id]=cb.checked;
+  try{ localStorage.setItem('guam-bookings',JSON.stringify(saved)); }catch(e){}
+}));
+</script>
+</body>
+</html>
